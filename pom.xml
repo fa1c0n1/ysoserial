@@ -336,6 +336,19 @@
             <artifactId>click-nodeps</artifactId>
             <version>2.3.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>8.5.72</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-el -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-el</artifactId>
+            <version>8.5.72</version>
+        </dependency>
 	</dependencies>
 
 	<profiles>

@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  * Yields:
  * - Instantiation of remotely loaded class
  *
- * @author mbechler
+ * @author m01e
  *
  */
 @PayloadTest ( harness="ysoserial.test.payloads.RemoteClassLoadingTest" )

